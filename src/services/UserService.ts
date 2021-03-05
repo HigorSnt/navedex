@@ -1,6 +1,6 @@
-import { User } from '../interfaces';
 import connection from '../database/connection';
 import { USERS } from '../constants/tables';
+import { User } from '../@types';
 
 export default class UserService {
   async create(user: User): Promise<Array<User>> {

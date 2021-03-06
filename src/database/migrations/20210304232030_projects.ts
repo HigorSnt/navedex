@@ -9,12 +9,11 @@ export async function up(knex: Knex): Promise<void> {
       table.string('name').notNullable();
 
       table
-        .integer('naver_id')
+        .string('user')
         .notNullable()
-        .references('id')
-        .inTable('navers')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
+        .references('email')
+        .inTable('users')
+        .onDelete('CASCADE');
     }
   );
 }

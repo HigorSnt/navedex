@@ -11,10 +11,11 @@ export default class UserController {
 
       const password_hash = await generateHash(password);
 
-      const user = await service.create({ email, password_hash });
+      await service.create({ email, password_hash });
 
-      return res.status(201).json(user[0]);
+      return res.status(201).json({ email });
     } catch (error) {
+      console.error(error);
       return res.status(400).json({ message: error.detail });
     }
   }

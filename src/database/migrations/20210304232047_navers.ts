@@ -12,12 +12,11 @@ export async function up(knex: Knex): Promise<void> {
       table.date('admission_date').notNullable();
 
       table
-        .integer('user_id')
+        .string('user')
         .notNullable()
-        .references('id')
+        .references('email')
         .inTable('users')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
+        .onDelete('CASCADE');
     }
   );
 }

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
+import { TOKEN_INVALID, TOKEN_REQUIRED } from '../constants/messages';
 
 export default async function authentication(
   req: Request,
@@ -9,7 +10,7 @@ export default async function authentication(
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: 'Token not provided.' });
+    return res.status(401).json({ message: TOKEN_REQUIRED });
   }
 
   const [, token] = authHeader.split(' ');
@@ -22,6 +23,6 @@ export default async function authentication(
 
     return next();
   } catch (error) {
-    return res.status(401).json({ error: 'Token invalid' });
+    return res.status(401).json({ error: TOKEN_INVALID });
   }
 }

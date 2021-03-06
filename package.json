@@ -6,7 +6,9 @@
   "author": "Higor Santos <higor.dantas@ccc.ufcg.edu.br>",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts"
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
+    "knex:latest": "knex migrate:latest",
+    "knex:rollback": "knex migrate:rollback"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

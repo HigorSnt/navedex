@@ -6,7 +6,7 @@
   <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/HigorSnt/navedex?style=flat-square">
   <img alt="GitHub" src="https://img.shields.io/github/license/HigorSnt/navedex?style=flat-square">
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/HigorSnt/navedex?style=flat-square"></br>
-  <a href="todo" target="_blank"><img src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia"></a>
+  <a href="https://insomnia.rest/run/?label=navedex&uri=https%3A%2F%2Fraw.githubusercontent.com%2FHigorSnt%2Fnavedex%2Fmain%2F.github%2Fnavedex.json" target="_blank"><img src="https://insomnia.rest/images/run.svg" alt="Run in Insomnia"></a>
 </p>
 
 ## :bookmark: Sobre

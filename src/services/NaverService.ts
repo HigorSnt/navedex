@@ -2,26 +2,34 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { QueryBuilder } from 'knex';
 import { Navers, PersistentNavers, UpdateNavers } from '../@types';
-import { NOT_ALLOWED } from '../constants/messages';
+import { NOT_ALLOWED, PROJECT_NOT_FOUND } from '../constants/messages';
 import { NAVERS, NAVERS_PROJECTS, PROJECTS } from '../constants/tables';
 import connection from '../database/connection';
 
 export default class NaverService {
   async create(naver: Navers, projects: number[]): Promise<PersistentNavers> {
-    const transaction = await connection.transaction();
+    try {
+      const transaction = await connection.transaction();
 
-    const insertedIds = await transaction(NAVERS).returning('id').insert(naver);
-    const naver_id = insertedIds[0];
+      const insertedIds = await transaction(NAVERS)
+        .returning('id')
+        .insert(naver);
+      const naver_id = insertedIds[0];
 
-    const naverProjects = projects.map((project_id: number) => {
-      return { naver_id, project_id };
-    });
+      const naverProjects = projects.map((project_id: number) => {
+        return { naver_id, project_id };
+      });
 
-    await transaction(NAVERS_PROJECTS).insert(naverProjects);
+      await transaction(NAVERS_PROJECTS).insert(naverProjects);
 
-    await transaction.commit();
+      await transaction.commit();
 
-    return { id: naver_id, ...naver, projects };
+      return { id: naver_id, ...naver, projects };
+    } catch (error) {
+      const e = { detail: PROJECT_NOT_FOUND };
+
+      throw e;
+    }
   }
 
   async show(id: number): Promise<PersistentNavers | null> {
@@ -107,38 +115,43 @@ export default class NaverService {
     user: string,
     naver_id: number
   ): Promise<PersistentNavers> {
-    let naver = await connection(NAVERS)
-      .where('id', naver_id)
-      .select('*')
-      .first();
-
-    if (naver.user === user) {
-      const transaction = await connection.transaction();
-
-      naver = await transaction(NAVERS)
+    try {
+      let naver = await connection(NAVERS)
         .where('id', naver_id)
-        .update(
-          {
-            ...updateNaver,
-            projects: undefined,
-          },
-          ['id', 'name', 'admission_date', 'job_role', 'birthdate']
-        );
+        .select('*')
+        .first();
 
-      if (updateNaver.projects.length > 0) {
-        await transaction(NAVERS_PROJECTS).where('naver_id', naver_id).del();
-        await transaction(NAVERS_PROJECTS).insert(
-          updateNaver.projects.map(project_id => {
-            return { naver_id, project_id };
-          })
-        );
+      if (naver.user === user) {
+        const transaction = await connection.transaction();
+
+        naver = await transaction(NAVERS)
+          .where('id', naver_id)
+          .update(
+            {
+              ...updateNaver,
+              projects: undefined,
+            },
+            ['id', 'name', 'admission_date', 'job_role', 'birthdate']
+          );
+
+        if (updateNaver.projects.length > 0) {
+          await transaction(NAVERS_PROJECTS).where('naver_id', naver_id).del();
+          await transaction(NAVERS_PROJECTS).insert(
+            updateNaver.projects.map(project_id => {
+              return { naver_id, project_id };
+            })
+          );
+        }
+
+        await transaction.commit();
+
+        return { ...naver[0], ...updateNaver };
+      } else {
+        throw new Error(NOT_ALLOWED);
       }
-
-      await transaction.commit();
-
-      return { ...naver[0], ...updateNaver };
-    } else {
-      throw new Error(NOT_ALLOWED);
+    } catch (error) {
+      const e = { detail: PROJECT_NOT_FOUND };
+      throw e;
     }
   }
 
